@@ -512,6 +512,11 @@ class FormatTimedeltaTestCase(unittest.TestCase):
         result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='minute')
         self.assertEqual(expected, result)
 
+    def test_format_four_units(self):
+        expected = '2 days, 5 hours, 2 minutes, and 5 seconds'
+        result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='second')
+        self.assertEqual(expected, result)
+
 class TimeZoneAdjustTestCase(unittest.TestCase):
 
     def _utc(self):

@@ -38,7 +38,6 @@ from babel._compat import string_types, integer_types, number_types, PY2
 
 NO_INHERITANCE_MARKER = u'\u2205\u2205\u2205'
 
-
 LC_TIME = default_locale('LC_TIME')
 
 # Aliases for use in scopes where the modules are shadowed by local variables
@@ -938,21 +937,24 @@ def format_timedelta(delta, granularity='second', threshold=.85,
                 value = max(1, value)
 
             remainder = float(str(value)[1:])
-            if remainder:
-                print('' + format_timedelta(timedelta(seconds=remainder * secs_per_unit)))
-            value = int(round(value))
+            if unit is not 'second':
+                myval = (format_timedelta(timedelta(seconds=remainder * secs_per_unit)))
+                print('Inductive' + myval)
+                plural_form = locale.plural_form(value)
+                pattern = None
+                for patterns in _iter_patterns(unit):
+                    if patterns is not None:
+                        pattern = patterns[plural_form]
+                        break
+                # This really should not happen
+                if pattern is None:
+                    return u''
+                return pattern.replace('{0} ', str(int(round(value))) + ' ') + ' ' + myval
 
-            plural_form = locale.plural_form(value)
-            pattern = None
-            for patterns in _iter_patterns(unit):
-                if patterns is not None:
-                    pattern = patterns[plural_form]
-                    break
-            # This really should not happen
-            if pattern is None:
-                return u''
-            return pattern.replace('{0}', str(value))
-
+            else:
+                myval = int(round(value))
+                value = myval
+                return 'BaseCase ' + str(myval) + ' second'
     return u''
 
 
@@ -974,8 +976,8 @@ def _format_fallback_interval(start, end, skeleton, tzinfo, locale):
 
     return (
         locale.interval_formats.get(None, "{0}-{1}").
-        replace("{0}", formatted_start).
-        replace("{1}", formatted_end)
+            replace("{0}", formatted_start).
+            replace("{1}", formatted_end)
     )
 
 
@@ -1422,11 +1424,11 @@ class DateTimeFormat(object):
         of digits passed in.
         """
         value = self.value.microsecond / 1000000
-        return self.format(round(value, num) * 10**num, num)
+        return self.format(round(value, num) * 10 ** num, num)
 
     def format_milliseconds_in_day(self, num):
         msecs = self.value.microsecond // 1000 + self.value.second * 1000 + \
-            self.value.minute * 60000 + self.value.hour * 3600000
+                self.value.minute * 60000 + self.value.hour * 3600000
         return self.format(msecs, num)
 
     def format_timezone(self, char, num):
@@ -1526,19 +1528,19 @@ class DateTimeFormat(object):
 
 
 PATTERN_CHARS = {
-    'G': [1, 2, 3, 4, 5],                                               # era
-    'y': None, 'Y': None, 'u': None,                                    # year
-    'Q': [1, 2, 3, 4, 5], 'q': [1, 2, 3, 4, 5],                         # quarter
-    'M': [1, 2, 3, 4, 5], 'L': [1, 2, 3, 4, 5],                         # month
-    'w': [1, 2], 'W': [1],                                              # week
-    'd': [1, 2], 'D': [1, 2, 3], 'F': [1], 'g': None,                   # day
+    'G': [1, 2, 3, 4, 5],  # era
+    'y': None, 'Y': None, 'u': None,  # year
+    'Q': [1, 2, 3, 4, 5], 'q': [1, 2, 3, 4, 5],  # quarter
+    'M': [1, 2, 3, 4, 5], 'L': [1, 2, 3, 4, 5],  # month
+    'w': [1, 2], 'W': [1],  # week
+    'd': [1, 2], 'D': [1, 2, 3], 'F': [1], 'g': None,  # day
     'E': [1, 2, 3, 4, 5, 6], 'e': [1, 2, 3, 4, 5, 6], 'c': [1, 3, 4, 5, 6],  # week day
-    'a': [1],                                                           # period
-    'h': [1, 2], 'H': [1, 2], 'K': [1, 2], 'k': [1, 2],                 # hour
-    'm': [1, 2],                                                        # minute
-    's': [1, 2], 'S': None, 'A': None,                                  # second
+    'a': [1],  # period
+    'h': [1, 2], 'H': [1, 2], 'K': [1, 2], 'k': [1, 2],  # hour
+    'm': [1, 2],  # minute
+    's': [1, 2], 'S': None, 'A': None,  # second
     'z': [1, 2, 3, 4], 'Z': [1, 2, 3, 4, 5], 'O': [1, 4], 'v': [1, 4],  # zone
-    'V': [1, 2, 3, 4], 'x': [1, 2, 3, 4, 5], 'X': [1, 2, 3, 4, 5]       # zone
+    'V': [1, 2, 3, 4], 'x': [1, 2, 3, 4, 5], 'X': [1, 2, 3, 4, 5]  # zone
 }
 
 #: The pattern characters declared in the Date Field Symbol Table
