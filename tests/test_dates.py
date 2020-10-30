@@ -20,7 +20,7 @@ import pytz
 from pytz import timezone
 
 from babel import dates, Locale
-from babel.dates import NO_INHERITANCE_MARKER
+from babel.dates import NO_INHERITANCE_MARKER, format_timedelta
 from babel.util import FixedOffsetTimezone
 
 
@@ -504,9 +504,7 @@ class FormatTimedeltaTestCase(unittest.TestCase):
 
     def test_format_multiple_units(self):
         expected = '2 days, 5 hours, and 2 minutes'
-        from babel import support
-        fmt = support.Format('en_US')
-        result = fmt.timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='day')
+        result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='day')
         self.assertEqual(expected, result)
 
 
