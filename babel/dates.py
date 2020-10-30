@@ -938,6 +938,8 @@ def format_timedelta(delta, granularity='second', threshold=.85,
                 value = max(1, value)
 
             remainder = float(str(value)[1:])
+            if remainder:
+                format_timedelta(timedelta(seconds=remainder * secs_per_unit))
             value = int(round(value))
 
             plural_form = locale.plural_form(value)
