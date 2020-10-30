@@ -936,7 +936,10 @@ def format_timedelta(delta, granularity='second', threshold=.85,
         if value >= threshold or unit == granularity:
             if unit == granularity and value > 0:
                 value = max(1, value)
+
+            remainder = float(str(value)[1:])
             value = int(round(value))
+
             plural_form = locale.plural_form(value)
             pattern = None
             for patterns in _iter_patterns(unit):
