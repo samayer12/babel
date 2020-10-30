@@ -949,12 +949,11 @@ def format_timedelta(delta, granularity='second', threshold=.85,
                 # This really should not happen
                 if pattern is None:
                     return u''
-                return pattern.replace('{0} ', str(int(round(value))) + ' ') + ' ' + myval
+                return pattern.replace('{0} ', str(int(round(value))) + ' ') + ', ' + myval
 
             else:
-                myval = int(round(value))
-                value = myval
-                return 'BaseCase ' + str(myval) + ' second'
+                value = int(round(value))
+                return 'and ' + str(value) + ' seconds'
     return u''
 
 
