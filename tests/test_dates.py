@@ -502,6 +502,13 @@ class FormatTimedeltaTestCase(unittest.TestCase):
         self.assertRaises(TypeError, dates.format_timedelta,
                           timedelta(hours=1), format=None)
 
+    def test_format_multiple_units(self):
+        expected = '2 days, 5 hours, and 2 minutes'
+        from babel import support
+        fmt = support.Format('en_US')
+        result = fmt.timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='day')
+        self.assertEqual(expected, result)
+
 
 class TimeZoneAdjustTestCase(unittest.TestCase):
 
