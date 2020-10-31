@@ -939,7 +939,6 @@ def format_timedelta(delta, granularity='second', threshold=.85,
             remainder = float(str(value)[1:])
             if unit is not granularity:
                 myval = (format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity))
-                print('Inductive' + myval)
                 plural_form = locale.plural_form(value)
                 pattern = None
                 for patterns in _iter_patterns(unit):
@@ -956,6 +955,8 @@ def format_timedelta(delta, granularity='second', threshold=.85,
 
             else:
                 value = int(round(value))
+                if value > 1:
+                    granularity += 's'
                 return str(value) + ' ' + granularity
     return u''
 

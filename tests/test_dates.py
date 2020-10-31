@@ -507,7 +507,6 @@ class FormatTimedeltaTestCase(unittest.TestCase):
         result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='day')
         self.assertEqual(expected, result)
 
-
     def test_format_two_units(self):
         expected = '2 days, and 5 hours'
         result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='hour')
