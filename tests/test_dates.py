@@ -502,8 +502,14 @@ class FormatTimedeltaTestCase(unittest.TestCase):
         self.assertRaises(TypeError, dates.format_timedelta,
                           timedelta(hours=1), format=None)
 
+    def test_format_one_unit(self):
+        expected = '2 days'
+        result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='day')
+        self.assertEqual(expected, result)
+
+
     def test_format_two_units(self):
-        expected = '2 days and 5 hours'
+        expected = '2 days, and 5 hours'
         result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='hour')
         self.assertEqual(expected, result)
 

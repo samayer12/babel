@@ -937,8 +937,8 @@ def format_timedelta(delta, granularity='second', threshold=.85,
                 value = max(1, value)
 
             remainder = float(str(value)[1:])
-            if unit is not 'second':
-                myval = (format_timedelta(timedelta(seconds=remainder * secs_per_unit)))
+            if unit is not granularity:
+                myval = (format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity))
                 print('Inductive' + myval)
                 plural_form = locale.plural_form(value)
                 pattern = None
@@ -949,11 +949,14 @@ def format_timedelta(delta, granularity='second', threshold=.85,
                 # This really should not happen
                 if pattern is None:
                     return u''
-                return pattern.replace('{0} ', str(int(round(value))) + ' ') + ', ' + myval
+                formatted_string = (pattern.replace('{0} ', str(int(round(value))) + ' ') + ', ' + myval).split(', ')
+                if not formatted_string[-1].__contains__('and'):
+                    formatted_string[-1] = 'and ' + formatted_string[-1]
+                return ', '.join(formatted_string)
 
             else:
                 value = int(round(value))
-                return 'and ' + str(value) + ' seconds'
+                return str(value) + ' ' + granularity
     return u''
 
 
