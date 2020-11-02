@@ -962,7 +962,7 @@ def format_timedelta(delta, granularity='second', threshold=.85,
         if int(value) > 0:
             formatted_string = (_pluralize(int(value)) + ', ' + recursive_result).split(', ')
         else:
-            formatted_string = [recursive_result]
+            formatted_string = (_pluralize(int(value)) + ', ' + recursive_result).split(', ')
         if len(formatted_string) > 1 and not formatted_string[-1].__contains__('and'):
             formatted_string[-1] = 'and ' + formatted_string[-1]
         return ', '.join(formatted_string)

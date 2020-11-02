@@ -503,16 +503,15 @@ class FormatTimedeltaTestCase(unittest.TestCase):
         self.assertRaises(TypeError, dates.format_timedelta,
                           timedelta(hours=1), format=None)
 
-    def test_format_edge_case_threshold_1(self):
-        expected = '51 seconds'
-        result = format_timedelta(timedelta(seconds=51), granularity='second', threshold=1)
-        self.assertEqual(expected, result)
-
     def test_format_edge_case_no_time(self):
         expected = '0 seconds'
         result = format_timedelta(timedelta(minutes=0), granularity='second', threshold=1)
         self.assertEqual(expected, result)
 
+    def test_format_edge_case_threshold_second(self):
+        expected = '1 minute, and 0 seconds'
+        result = format_timedelta(timedelta(seconds=60), granularity='second', threshold=1)
+        self.assertEqual(expected, result)
 
     def test_format_edge_case_threshold_minute(self):
         expected = '1 minute'
@@ -522,11 +521,6 @@ class FormatTimedeltaTestCase(unittest.TestCase):
     def test_format_edge_case_threshold_hour(self):
         expected = '2 hours'
         result = format_timedelta(timedelta(hours=2), granularity='hour', threshold=1)
-        self.assertEqual(expected, result)
-
-    def test_format_edge_case_threshold_empty_second(self):
-        expected = '1 minute, and 0 seconds'
-        result = format_timedelta(timedelta(minutes=1), granularity='second', threshold=1)
         self.assertEqual(expected, result)
 
     def test_format_timedelta_all_times_seconds(self):
@@ -568,8 +562,8 @@ class FormatTimedeltaTestCase(unittest.TestCase):
             self.assertEqual(expected, result)
 
     def test_format_edge_case_week(self):
-        expected = '1 week, 0 days, and 0 seconds'
-        result = format_timedelta(timedelta(weeks=1), granularity='second', threshold=1)
+        expected = '0 years, 0 months, 1 week, 0 days, 23 hours, 0 minutes, and 0 seconds'
+        result = format_timedelta(timedelta(weeks=1, days=0, hours=23), granularity='second', threshold=1)
         self.assertEqual(expected, result)
 
     def test_format_timedelta_all_times_minutes(self):
