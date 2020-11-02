@@ -947,7 +947,7 @@ def format_timedelta(delta, granularity='second', threshold=.85,
 
     secs_per_unit = time_units[0][1]
     remainder, value = modf(abs(seconds) / secs_per_unit)
-    print(time_units[0][0] + ' = ' + str(value) + ' = ' + str(remainder))
+    # print(time_units[0][0] + ' = ' + str(value) + ' = ' + str(remainder))
 
     if time_units[0][0] == granularity:
         # Base case
@@ -958,6 +958,7 @@ def format_timedelta(delta, granularity='second', threshold=.85,
         recursive_result = (
             format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity, threshold=threshold,
                              time_units=time_units[1:]))
+        # Format Output
         if int(value) > 0:
             formatted_string = (_pluralize(int(value)) + ', ' + recursive_result).split(', ')
         else:
