@@ -502,16 +502,6 @@ class FormatTimedeltaTestCase(unittest.TestCase):
         self.assertRaises(TypeError, dates.format_timedelta,
                           timedelta(hours=1), format=None)
 
-    def test_format_one_unit(self):
-        expected = '2 days'
-        result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='day')
-        self.assertEqual(expected, result)
-
-    def test_format_two_units(self):
-        expected = '2 days, and 5 hours'
-        result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='hour')
-        self.assertEqual(expected, result)
-
     def test_format_three_units(self):
         expected = '2 days, 5 hours, and 2 minutes'
         result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='minute')
@@ -520,6 +510,16 @@ class FormatTimedeltaTestCase(unittest.TestCase):
     def test_format_four_units(self):
         expected = '2 days, 1 hour, 26 minutes, and 30 seconds'
         result = format_timedelta(timedelta(days=2, hours=1, minutes=26, seconds=30), granularity='second')
+        self.assertEqual(expected, result)
+
+    def test_format_edge_case_threshold_1(self):
+        expected = '51 seconds'
+        result = format_timedelta(timedelta(seconds=51), granularity='second', threshold=1)
+        self.assertEqual(expected, result)
+
+    def test_format_edge_case_threshold_2(self):
+        expected = '1 minute, and 0 seconds'
+        result = format_timedelta(timedelta(minutes=1), granularity='second', threshold=1)
         self.assertEqual(expected, result)
 
     def test_format_timedelta_all_times(self):
@@ -538,15 +538,22 @@ class FormatTimedeltaTestCase(unittest.TestCase):
             else:
                 return str(value) + ' ' + unit
 
-        for times in exhaustive[0:48]:
+        for times in exhaustive:
+            print('VALUES   - ' + str(times))
             import re
-            expected = re.sub(r'((^|, )0 [a-z]*(|$))', '',
-                              '{0}, {1}, {2}, {3}'.format(_pluralize(times[0], 'day'), _pluralize(times[1], 'hour'),
-                                                          _pluralize(times[2], 'minute'),
-                                                          _pluralize(times[3], 'second')))
+            if (sum(times[0:2]) != 0) and (times[3] != 0):
+                expected = re.sub(r'((^|, )0 [a-z]*(|$))', '',
+                                  '{0}, {1}, {2}, and {3}'.format(_pluralize(times[0], 'day'), _pluralize(times[1], 'hour'),
+                                                              _pluralize(times[2], 'minute'), _pluralize(times[3], 'second')))
+            else:
+                expected = re.sub(r'((^|, )0 [a-z]*(|$))', '',
+                                  '{0}, {1}, {2}, {3}'.format(_pluralize(times[0], 'day'), _pluralize(times[1], 'hour'),
+                                                              _pluralize(times[2], 'minute'),
+                                                              _pluralize(times[3], 'second')))
             expected = re.sub(r'(^, )', '', expected)
+
             result = format_timedelta(timedelta(days=times[0], hours=times[1], minutes=times[2], seconds=times[3]),
-                                      granularity='second')
+                                      granularity='second', threshold=1)
             if expected != result:
                 print('Failed with: ' + str(times))
                 print('EXPECTED - ' + expected)

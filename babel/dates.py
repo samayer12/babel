@@ -838,7 +838,7 @@ def format_skeleton(skeleton, datetime=None, tzinfo=None, fuzzy=True, locale=LC_
     return format_datetime(datetime, format, tzinfo, locale)
 
 
-TIMEDELTA_UNITS = (
+TIMEDELTA_UNITS_TUPLE = (
     ('year', 3600 * 24 * 365),
     ('month', 3600 * 24 * 30),
     ('week', 3600 * 24 * 7),
@@ -847,6 +847,16 @@ TIMEDELTA_UNITS = (
     ('minute', 60),
     ('second', 1)
 )
+
+TIMEDELTA_UNITS_DICT = {
+    'year': {'parent_unit': None, 'child_unit': 'month', 'secs_per_unit': 3600 * 24 * 365},
+    'month': {'parent_unit': 'year', 'child_unit': 'week', 'secs_per_unit': 3600 * 24 * 30},
+    'week': {'parent_unit': 'month', 'child_unit': 'day', 'secs_per_unit': 3600 * 24 * 7},
+    'day': {'parent_unit': 'week', 'child_unit': 'hour', 'secs_per_unit': 3600 * 24},
+    'hour': {'parent_unit': 'day', 'child_unit': 'minute', 'secs_per_unit': 3600},
+    'minute': {'parent_unit': 'hour', 'child_unit': 'second', 'secs_per_unit': 60},
+    'second': {'parent_unit': 'minute', 'child_unit': None, 'secs_per_unit': 1}
+}
 
 
 def format_timedelta(delta, granularity='second', threshold=.85,
@@ -942,7 +952,7 @@ def format_timedelta(delta, granularity='second', threshold=.85,
 
         return pattern.replace('{0} ', str(int(round(value))) + ' ')
 
-    for unit, secs_per_unit in TIMEDELTA_UNITS:
+    for unit, secs_per_unit in TIMEDELTA_UNITS_TUPLE:
         value = abs(seconds) / secs_per_unit
         if value >= threshold:
             remainder = float(str(value)[1:])
@@ -953,12 +963,14 @@ def format_timedelta(delta, granularity='second', threshold=.85,
                 return _pluralize(value)
             else:
                 recursive_result = (
-                    format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity))
+                    format_timedelta(timedelta(seconds=remainder * secs_per_unit),
+                                     granularity=granularity))
                 formatted_string = (_pluralize(value) + ', ' + recursive_result).split(', ')
                 if not formatted_string[-1].__contains__('and'):
                     formatted_string[-1] = 'and ' + formatted_string[-1]
                 return ', '.join(formatted_string)
-    return u''
+
+    return _pluralize(value)
 
 
 def _format_fallback_interval(start, end, skeleton, tzinfo, locale):
