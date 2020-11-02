@@ -522,6 +522,37 @@ class FormatTimedeltaTestCase(unittest.TestCase):
         result = format_timedelta(timedelta(days=2, hours=1, minutes=26, seconds=30), granularity='second')
         self.assertEqual(expected, result)
 
+    def test_format_timedelta_all_times(self):
+        days = range(0, 31)
+        hours = range(0, 24)
+        minutes = range(0, 60)
+        seconds = range(0, 60)
+        alltimes = [days, hours, minutes, seconds]
+        exhaustive = list(itertools.product(*alltimes))
+
+        def _pluralize(value, unit):
+            plurals = {'year': 'years', 'month': 'months', 'week': 'weeks', 'day': 'days',
+                       'hour': 'hours', 'minute': 'minutes', 'second': 'seconds'}
+            if value > 1:
+                return str(value) + ' ' + plurals[unit]
+            else:
+                return str(value) + ' ' + unit
+
+        for times in exhaustive[0:48]:
+            import re
+            expected = re.sub(r'((^|, )0 [a-z]*(|$))', '',
+                              '{0}, {1}, {2}, {3}'.format(_pluralize(times[0], 'day'), _pluralize(times[1], 'hour'),
+                                                          _pluralize(times[2], 'minute'),
+                                                          _pluralize(times[3], 'second')))
+            expected = re.sub(r'(^, )', '', expected)
+            result = format_timedelta(timedelta(days=times[0], hours=times[1], minutes=times[2], seconds=times[3]),
+                                      granularity='second')
+            if expected != result:
+                print('Failed with: ' + str(times))
+                print('EXPECTED - ' + expected)
+                print('RESULT   - ' + result)
+
+
 class TimeZoneAdjustTestCase(unittest.TestCase):
 
     def _utc(self):
