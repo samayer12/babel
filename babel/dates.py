@@ -839,10 +839,10 @@ def format_skeleton(skeleton, datetime=None, tzinfo=None, fuzzy=True, locale=LC_
 
 
 TIMEDELTA_UNITS_TUPLE = (
-    ('year', 3600 * 24 * 365),
-    ('month', 3600 * 24 * 30),
-    ('week', 3600 * 24 * 7),
-    ('day', 3600 * 24),
+    # ('year', 3600 * 24 * 365),
+    # ('month', 3600 * 24 * 30),
+    # ('week', 3600 * 24 * 7),
+    # ('day', 3600 * 24),
     ('hour', 3600),
     ('minute', 60),
     ('second', 1)
@@ -964,7 +964,7 @@ def format_timedelta(delta, granularity='second', threshold=.85,
         return _pluralize(value)
     else:
         # Recursive step
-        recursive_result = (format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity, time_units=time_units[1:]))
+        recursive_result = (format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity, threshold=threshold, time_units=time_units[1:]))
         if int(value) > 0:
             formatted_string = (_pluralize(int(value)) + ', ' + recursive_result).split(', ')
         else:
