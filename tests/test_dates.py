@@ -12,8 +12,9 @@
 # history and logs, available at http://babel.edgewall.org/log/.
 
 import calendar
-from datetime import date, datetime, time, timedelta
+import itertools
 import unittest
+from datetime import date, datetime, time, timedelta
 
 import pytest
 import pytz
