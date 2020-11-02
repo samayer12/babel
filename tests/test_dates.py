@@ -503,22 +503,22 @@ class FormatTimedeltaTestCase(unittest.TestCase):
         self.assertRaises(TypeError, dates.format_timedelta,
                           timedelta(hours=1), format=None)
 
-    def test_format_three_units(self):
-        expected = '2 days, 5 hours, and 2 minutes'
-        result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='minute')
-        self.assertEqual(expected, result)
-
-    def test_format_four_units(self):
-        expected = '2 days, 1 hour, 26 minutes, and 30 seconds'
-        result = format_timedelta(timedelta(days=2, hours=1, minutes=26, seconds=30), granularity='second')
-        self.assertEqual(expected, result)
-
     def test_format_edge_case_threshold_1(self):
         expected = '51 seconds'
         result = format_timedelta(timedelta(seconds=51), granularity='second', threshold=1)
         self.assertEqual(expected, result)
 
-    def test_format_edge_case_threshold_2(self):
+    def test_format_edge_case_threshold_minute(self):
+        expected = '1 minute'
+        result = format_timedelta(timedelta(minutes=1), granularity='minute', threshold=1)
+        self.assertEqual(expected, result)
+
+    def test_format_edge_case_threshold_hour(self):
+        expected = '2 hours'
+        result = format_timedelta(timedelta(hours=2), granularity='hour', threshold=1)
+        self.assertEqual(expected, result)
+
+    def test_format_edge_case_threshold_empty_second(self):
         expected = '1 minute, and 0 seconds'
         result = format_timedelta(timedelta(minutes=1), granularity='second', threshold=1)
         self.assertEqual(expected, result)
