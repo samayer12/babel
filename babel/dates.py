@@ -930,34 +930,34 @@ def format_timedelta(delta, granularity='second', threshold=.85,
         a_unit = 'duration-' + a_unit
         yield locale._data['unit_patterns'].get(a_unit, {}).get(format)
 
+    def _pluralize(value):
+        plural_form = locale.plural_form(int(value))
+        pattern = None
+        for patterns in _iter_patterns(unit):
+            if patterns is not None:
+                pattern = patterns[plural_form]
+        if pattern is None:
+            # This really should not happen
+            return u''
+
+        return pattern.replace('{0} ', str(int(round(value))) + ' ')
+
     for unit, secs_per_unit in TIMEDELTA_UNITS:
         value = abs(seconds) / secs_per_unit
-        if value >= threshold or unit == granularity:
-            if unit == granularity and value > 0:
-                value = max(1, value)
-
+        if value >= threshold:
             remainder = float(str(value)[1:])
-            if unit is not granularity:
-                myval = (format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity))
-                plural_form = locale.plural_form(value)
-                pattern = None
-                for patterns in _iter_patterns(unit):
-                    if patterns is not None:
-                        pattern = patterns[plural_form]
-                        break
-                # This really should not happen
-                if pattern is None:
-                    return u''
-                formatted_string = (pattern.replace('{0} ', str(int(round(value))) + ' ') + ', ' + myval).split(', ')
+            value = int(round(value))
+
+            if unit == granularity:
+                value = max(1, value)  # ?
+                return _pluralize(value)
+            else:
+                recursive_result = (
+                    format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity))
+                formatted_string = (_pluralize(value) + ', ' + recursive_result).split(', ')
                 if not formatted_string[-1].__contains__('and'):
                     formatted_string[-1] = 'and ' + formatted_string[-1]
                 return ', '.join(formatted_string)
-
-            else:
-                value = int(round(value))
-                if value > 1:
-                    granularity += 's'
-                return str(value) + ' ' + granularity
     return u''
 
 
