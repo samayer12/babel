@@ -505,65 +505,32 @@ class FormatTimedeltaTestCase(unittest.TestCase):
 
     def test_format_edge_case_no_time(self):
         expected = '0 seconds'
-        result = format_timedelta(timedelta(minutes=0), granularity='second', threshold=1)
+        result = format_timedelta(timedelta(seconds=0), granularity='second', threshold=1)
         self.assertEqual(expected, result)
 
-    def test_format_edge_case_threshold_second(self):
+    def test_format_edge_case_granularity_second(self):
         expected = '1 minute, and 0 seconds'
         result = format_timedelta(timedelta(seconds=60), granularity='second', threshold=1)
         self.assertEqual(expected, result)
 
-    def test_format_edge_case_threshold_minute(self):
+    def test_format_edge_case_granularity_minute(self):
         expected = '1 minute'
         result = format_timedelta(timedelta(minutes=1), granularity='minute', threshold=1)
         self.assertEqual(expected, result)
 
-    def test_format_edge_case_threshold_hour(self):
-        expected = '2 hours'
-        result = format_timedelta(timedelta(hours=2), granularity='hour', threshold=1)
+    def test_format_edge_case_granularity_minute(self):
+        expected = '0 years, 0 months, 0 weeks, 0 days, and 0 hours'
+        result = format_timedelta(timedelta(minutes=1), granularity='hour', threshold=1)
         self.assertEqual(expected, result)
 
-    def test_format_timedelta_all_times_seconds(self):
-        days = range(0, 31)
-        hours = range(0, 24)
-        minutes = range(0, 60)
-        seconds = range(0, 60)
-        alltimes = [days, hours, minutes, seconds]
-        exhaustive = list(itertools.product(*alltimes))
-
-        def _pluralize(value, unit):
-            plurals = {'year': 'years', 'month': 'months', 'week': 'weeks', 'day': 'days',
-                       'hour': 'hours', 'minute': 'minutes', 'second': 'seconds'}
-            if value > 1:
-                return str(value) + ' ' + plurals[unit]
-            else:
-                return str(value) + ' ' + unit
-
-        for times in exhaustive:
-            import re
-
-            if sum(times[0:3]) != 0:
-                expected = re.sub(r'((^|, )0 [a-z]*(|$))', '',
-                                  '{0}, {1}, {2}, and {3}'.format(_pluralize(times[0], 'day'), _pluralize(times[1], 'hour'),
-                                                              _pluralize(times[2], 'minute'), _pluralize(times[3], 'second')))
-                if times[3] == 0:
-                    expected += 's'
-            else:
-                expected = re.sub(r'((^|, )0 [a-z]*(|$))', '',
-                                  '{0}, {1}, {2}, {3}'.format(_pluralize(times[0], 'day'), _pluralize(times[1], 'hour'),
-                                                              _pluralize(times[2], 'minute'),
-                                                              _pluralize(times[3], 'second')))
-            expected = re.sub(r'(^, )', '', expected)
-            if sum(times) == 0:
-                expected = '0 seconds'
-
-            result = format_timedelta(timedelta(days=times[0], hours=times[1], minutes=times[2], seconds=times[3]),
-                                      granularity='second', threshold=1)
-            self.assertEqual(expected, result)
-
-    def test_format_edge_case_week(self):
+    def test_format_timedelta_week(self):
         expected = '0 years, 0 months, 1 week, 0 days, 23 hours, 0 minutes, and 0 seconds'
         result = format_timedelta(timedelta(weeks=1, days=0, hours=23), granularity='second', threshold=1)
+        self.assertEqual(expected, result)
+
+    def test_format_timedelta_comprehensive(self):
+        expected = '1 year, 1 month, 2 weeks, 1 day, 10 hours, 1 minute, and 1 second'
+        result = format_timedelta(timedelta(days=410, hours=10, minutes=1, seconds=1), granularity='second', threshold=1)
         self.assertEqual(expected, result)
 
     def test_format_timedelta_all_times_minutes(self):
