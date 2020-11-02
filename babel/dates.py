@@ -839,10 +839,10 @@ def format_skeleton(skeleton, datetime=None, tzinfo=None, fuzzy=True, locale=LC_
 
 
 TIMEDELTA_UNITS_TUPLE = (
-    # ('year', 3600 * 24 * 365),
-    # ('month', 3600 * 24 * 30),
-    # ('week', 3600 * 24 * 7),
-    # ('day', 3600 * 24),
+    ('year', 3600 * 24 * 365),
+    ('month', 3600 * 24 * 30),
+    ('week', 3600 * 24 * 7),
+    ('day', 3600 * 24),
     ('hour', 3600),
     ('minute', 60),
     ('second', 1)
@@ -953,10 +953,10 @@ def format_timedelta(delta, granularity='second', threshold=.85,
         return pattern.replace('{0} ', str(int(round(value))) + ' ')
 
     secs_per_unit = time_units[0][1]
-    remainder = 0.0
     value = abs(seconds) / secs_per_unit
-    if value < threshold:
-        remainder = float(str(value)[1:])
+    remainder = value % secs_per_unit
+
+    print(time_units[0][0] + ' = '+ str(value) + ' = ' + str(remainder))
 
     if time_units[0][0] == granularity:
         # Base case
