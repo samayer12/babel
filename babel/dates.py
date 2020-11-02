@@ -850,16 +850,6 @@ TIMEDELTA_UNITS_TUPLE = (
     ('second', 1)
 )
 
-TIMEDELTA_UNITS_DICT = {
-    'year': {'parent_unit': None, 'child_unit': 'month', 'secs_per_unit': 3600 * 24 * 365},
-    'month': {'parent_unit': 'year', 'child_unit': 'week', 'secs_per_unit': 3600 * 24 * 30},
-    'week': {'parent_unit': 'month', 'child_unit': 'day', 'secs_per_unit': 3600 * 24 * 7},
-    'day': {'parent_unit': 'week', 'child_unit': 'hour', 'secs_per_unit': 3600 * 24},
-    'hour': {'parent_unit': 'day', 'child_unit': 'minute', 'secs_per_unit': 3600},
-    'minute': {'parent_unit': 'hour', 'child_unit': 'second', 'secs_per_unit': 60},
-    'second': {'parent_unit': 'minute', 'child_unit': None, 'secs_per_unit': 1}
-}
-
 
 def format_timedelta(delta, granularity='second', threshold=.85,
                      add_direction=False, format='long',
