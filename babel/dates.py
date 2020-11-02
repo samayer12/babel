@@ -861,7 +861,7 @@ TIMEDELTA_UNITS_DICT = {
 
 def format_timedelta(delta, granularity='second', threshold=.85,
                      add_direction=False, format='long',
-                     locale=LC_TIME):
+                     locale=LC_TIME, time_units=TIMEDELTA_UNITS_TUPLE):
     """Return a time delta according to the rules of the given locale.
 
     >>> format_timedelta(timedelta(weeks=12), locale='en_US')
@@ -943,7 +943,7 @@ def format_timedelta(delta, granularity='second', threshold=.85,
     def _pluralize(value):
         plural_form = locale.plural_form(int(value))
         pattern = None
-        for patterns in _iter_patterns(unit):
+        for patterns in _iter_patterns(time_units[0][0]):
             if patterns is not None:
                 pattern = patterns[plural_form]
         if pattern is None:
@@ -952,25 +952,23 @@ def format_timedelta(delta, granularity='second', threshold=.85,
 
         return pattern.replace('{0} ', str(int(round(value))) + ' ')
 
-    for unit, secs_per_unit in TIMEDELTA_UNITS_TUPLE:
-        value = abs(seconds) / secs_per_unit
-        if value >= threshold:
-            remainder = float(str(value)[1:])
-            value = int(round(value))
+    secs_per_unit = time_units[0][1]
+    remainder = 0.0
+    value = abs(seconds) / secs_per_unit
+    if value < threshold:
+        remainder = float(str(value)[1:])
 
-            if unit == granularity:
-                value = max(1, value)  # ?
-                return _pluralize(value)
-            else:
-                recursive_result = (
-                    format_timedelta(timedelta(seconds=remainder * secs_per_unit),
-                                     granularity=granularity))
-                formatted_string = (_pluralize(value) + ', ' + recursive_result).split(', ')
-                if not formatted_string[-1].__contains__('and'):
-                    formatted_string[-1] = 'and ' + formatted_string[-1]
-                return ', '.join(formatted_string)
-
-    return _pluralize(value)
+    if time_units[0][0] == granularity:
+        # Base case
+        value = max(1, int(round(value)))
+        return _pluralize(value)
+    else:
+        # Recursive step
+        recursive_result = (format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity, time_units=time_units[1:]))
+        formatted_string = (_pluralize(value) + ', ' + recursive_result).split(', ')
+        if not formatted_string[-1].__contains__('and'):
+            formatted_string[-1] = 'and ' + formatted_string[-1]
+        return ', '.join(formatted_string)
 
 
 def _format_fallback_interval(start, end, skeleton, tzinfo, locale):
