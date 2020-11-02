@@ -20,6 +20,8 @@ from __future__ import division
 
 import re
 import warnings
+from math import modf
+
 import pytz as _pytz
 
 from datetime import date, datetime, time, timedelta
@@ -928,6 +930,7 @@ def format_timedelta(delta, granularity='second', threshold=.85,
         seconds = int((delta.days * 86400) + delta.seconds)
     else:
         seconds = delta
+
     locale = Locale.parse(locale)
 
     def _iter_patterns(a_unit):
@@ -953,10 +956,8 @@ def format_timedelta(delta, granularity='second', threshold=.85,
         return pattern.replace('{0} ', str(int(round(value))) + ' ')
 
     secs_per_unit = time_units[0][1]
-    value = abs(seconds) / secs_per_unit
-    remainder = value % secs_per_unit
-
-    print(time_units[0][0] + ' = '+ str(value) + ' = ' + str(remainder))
+    remainder, value = modf(abs(seconds) / secs_per_unit)
+    print(time_units[0][0] + ' = ' + str(value) + ' = ' + str(remainder))
 
     if time_units[0][0] == granularity:
         # Base case
@@ -964,7 +965,9 @@ def format_timedelta(delta, granularity='second', threshold=.85,
         return _pluralize(value)
     else:
         # Recursive step
-        recursive_result = (format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity, threshold=threshold, time_units=time_units[1:]))
+        recursive_result = (
+            format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity, threshold=threshold,
+                             time_units=time_units[1:]))
         if int(value) > 0:
             formatted_string = (_pluralize(int(value)) + ', ' + recursive_result).split(', ')
         else:
