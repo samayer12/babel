@@ -539,7 +539,6 @@ class FormatTimedeltaTestCase(unittest.TestCase):
                 return str(value) + ' ' + unit
 
         for times in exhaustive:
-            print('VALUES   - ' + str(times))
             import re
             if (sum(times[0:3]) != 0):
                 expected = re.sub(r'((^|, )0 [a-z]*(|$))', '',
