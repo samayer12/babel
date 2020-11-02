@@ -960,13 +960,16 @@ def format_timedelta(delta, granularity='second', threshold=.85,
 
     if time_units[0][0] == granularity:
         # Base case
-        value = max(1, int(round(value)))
+        value = int(round(value))
         return _pluralize(value)
     else:
         # Recursive step
         recursive_result = (format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity, time_units=time_units[1:]))
-        formatted_string = (_pluralize(value) + ', ' + recursive_result).split(', ')
-        if not formatted_string[-1].__contains__('and'):
+        if int(value) > 0:
+            formatted_string = (_pluralize(int(value)) + ', ' + recursive_result).split(', ')
+        else:
+            formatted_string = [recursive_result]
+        if len(formatted_string) > 1 and not formatted_string[-1].__contains__('and'):
             formatted_string[-1] = 'and ' + formatted_string[-1]
         return ', '.join(formatted_string)
 
