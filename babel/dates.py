@@ -959,10 +959,7 @@ def format_timedelta(delta, granularity='second', threshold=.85,
             format_timedelta(timedelta(seconds=remainder * secs_per_unit), granularity=granularity, threshold=threshold,
                              time_units=time_units[1:]))
         # Format Output
-        if int(value) > 0:
-            formatted_string = (_pluralize(int(value)) + ', ' + recursive_result).split(', ')
-        else:
-            formatted_string = (_pluralize(int(value)) + ', ' + recursive_result).split(', ')
+        formatted_string = (_pluralize(int(value)) + ', ' + recursive_result).split(', ')
         if len(formatted_string) > 1 and not formatted_string[-1].__contains__('and'):
             formatted_string[-1] = 'and ' + formatted_string[-1]
         return ', '.join(formatted_string)
