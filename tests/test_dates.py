@@ -518,8 +518,8 @@ class FormatTimedeltaTestCase(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_format_four_units(self):
-        expected = '2 days, 5 hours, 2 minutes, and 5 seconds'
-        result = format_timedelta(timedelta(days=2, hours=5, minutes=2, seconds=5), granularity='second')
+        expected = '2 days, 1 hour, 26 minutes, and 30 seconds'
+        result = format_timedelta(timedelta(days=2, hours=1, minutes=26, seconds=30), granularity='second')
         self.assertEqual(expected, result)
 
 class TimeZoneAdjustTestCase(unittest.TestCase):
@@ -529,6 +529,7 @@ class TimeZoneAdjustTestCase(unittest.TestCase):
 
             def localize(self, dt, is_dst=False):
                 raise NotImplementedError()
+
         UTC = EvilFixedOffsetTimezone(0, 'UTC')
         # This is important to trigger the actual bug (#257)
         self.assertEqual(False, hasattr(UTC, 'normalize'))
