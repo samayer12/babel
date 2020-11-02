@@ -80,13 +80,13 @@ class DateTimeFormatTestCase(unittest.TestCase):
         self.assertEqual('53', fmt['w'])
 
     def test_week_of_year_de_first_us_last_with_year(self):
-        d = date(2018,12,31)
+        d = date(2018, 12, 31)
         fmt = dates.DateTimeFormat(d, locale='de_DE')
         self.assertEqual('1', fmt['w'])
         self.assertEqual('2019', fmt['YYYY'])
         fmt = dates.DateTimeFormat(d, locale='en_US')
         self.assertEqual('53', fmt['w'])
-        self.assertEqual('2018',fmt['yyyy'])
+        self.assertEqual('2018', fmt['yyyy'])
 
     def test_week_of_month_first(self):
         d = date(2006, 1, 8)
@@ -522,7 +522,7 @@ class FormatTimedeltaTestCase(unittest.TestCase):
         result = format_timedelta(timedelta(minutes=1), granularity='second', threshold=1)
         self.assertEqual(expected, result)
 
-    def test_format_timedelta_all_times(self):
+    def test_format_timedelta_all_times_seconds(self):
         days = range(0, 31)
         hours = range(0, 24)
         minutes = range(0, 60)
@@ -844,8 +844,8 @@ def test_parse_pattern():
 
 def test_lithuanian_long_format():
     assert (
-        dates.format_date(date(2015, 12, 10), locale='lt_LT', format='long') ==
-        u'2015 m. gruodžio 10 d.'
+            dates.format_date(date(2015, 12, 10), locale='lt_LT', format='long') ==
+            u'2015 m. gruodžio 10 d.'
     )
 
 
@@ -891,8 +891,9 @@ def test_no_inherit_metazone_formatting():
 def test_russian_week_numbering():
     # See https://github.com/python-babel/babel/issues/485
     v = date(2017, 1, 1)
-    assert dates.format_date(v, format='YYYY-ww',locale='ru_RU') == '2016-52'  # This would have returned 2017-01 prior to CLDR 32
-    assert dates.format_date(v, format='YYYY-ww',locale='de_DE') == '2016-52'
+    assert dates.format_date(v, format='YYYY-ww',
+                             locale='ru_RU') == '2016-52'  # This would have returned 2017-01 prior to CLDR 32
+    assert dates.format_date(v, format='YYYY-ww', locale='de_DE') == '2016-52'
 
 
 def test_en_gb_first_weekday():
